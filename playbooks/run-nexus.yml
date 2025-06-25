@@ -1,0 +1,57 @@
+- name: Start nexus nodes
+  hosts: nexus
+    
+  tasks:
+    - name: Updated and install dependencies
+      become: yes
+      apt:
+        pkg:
+          - git
+          - protobuf-compiler
+          - pkg-config
+          - build-essential
+          - libssl-dev
+        update_cache: yes
+
+    - name: Install rust
+      shell: 
+        curl -sSf https://sh.rustup.rs | sh -s -- -y
+      args:
+        creates: "{{ user_dir }}/.cargo/bin/rustc"
+
+    - name: Add Rust to PATH in .bashrc
+      lineinfile:
+        path: "{{ user_dir }}/.bashrc"
+        line: 'source "$HOME/.cargo/env"'
+        state: present
+    
+    - name: Clone repository
+      git:
+        repo: https://github.com/nexus-xyz/nexus-cli
+        dest: '{{ user_dir }}/nexus-cli'
+        version: main
+
+    - name: Build Nexus CLI
+      command:
+        cargo build --release
+      environment:
+        PATH: "{{ user_dir }}/.cargo/bin:{{ ansible_env.PATH }}"
+      args:
+        chdir: '{{ user_dir }}/nexus-cli/clients/cli'
+        creates: '{{ user_dir }}/nexus-cli/clients/cli/target/release/nexus-network'
+
+    - name: Create Nexus Service
+      become: yes
+      template:
+        src: nexus.service.j2
+        dest: /etc/systemd/system/nexus.service
+        owner: root
+        group: root
+
+    - name: Start nexus
+      become: yes
+      systemd: 
+        name: nexus
+        state: restarted
+        daemon_reload: yes
+        enabled: yes

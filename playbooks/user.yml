@@ -1,0 +1,40 @@
+- name: Create user 
+  hosts: servers
+  become: yes
+
+  tasks:
+    - name: Create a nexus user
+      user:
+        name: nexus
+        shell: /bin/bash
+        groups: sudo
+        append: yes
+        create_home: yes
+
+    - name: Set authorized key taken from file
+      authorized_key:
+        user: nexus
+        state: present
+        key: "{{ lookup('file', '~/.ssh/lightnode.pub') }}"
+
+    - name: Allow user to run sudo without a psswd
+      copy:
+        dest: /etc/sudoers.d/nexus
+        content: |
+          nexus ALL=(ALL) NOPASSWD:ALL
+        owner: root
+        group: root
+        mode: '0440'
+
+    - name: Disable root login
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+      notify: Restart ssh
+  
+  handlers:
+    - name: Restart ssh
+      service:
+        name: ssh
+        state: restarted

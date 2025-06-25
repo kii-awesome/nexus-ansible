@@ -1,0 +1,31 @@
+all:
+  vars:
+    # ansible_user: root # for user playbooks
+    ansible_user: nexus
+    ansible_port: 22
+          ansible_host: IP3
+    nexus:
+      hosts:
+        nexus1:
+    ansible_ssh_private_key_file: ~/.ssh/id_rsa
+    user_dir: /home/{{ ansible_user }}
+  children:
+    servers:
+      hosts:
+        server1:
+          ansible_host: IP1
+        server2:
+          ansible_host: IP2
+        server3:
+          ansible_host: IP3
+    nexus:
+      hosts:
+        nexus1:
+          ansible_host: IP1
+          node_id: NEXUS_NODE_ID1
+        nexus2:
+          ansible_host: IP2
+          node_id: NEXUS_NODE_ID2
+        nexus3:
+          ansible_host: IP3
+          node_id: NEXUS_NODE_ID3

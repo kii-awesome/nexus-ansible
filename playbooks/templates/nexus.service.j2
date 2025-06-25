@@ -1,0 +1,14 @@
+[Unit]
+Description="Nexus Proving"
+After=network-online.target
+
+[Service]
+Type=simple
+User={{ ansible_user }}
+ExecStart=/home/{{ ansible_user }}/nexus-cli/clients/cli/target/release/nexus-network start --node-id {{ node_id }} --headless
+Restart=always
+RestartSec=2
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
