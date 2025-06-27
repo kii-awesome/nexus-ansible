@@ -1,0 +1,31 @@
+- name: Upgrade nodes
+  hosts: nexus
+  vars:
+    tag_version: v0.8.13
+
+  tasks:
+    - name: Fetch new version
+      command: 
+        git fetch --all
+      args:
+        chdir: '{{ user_dir }}/nexus-cli'
+    
+    - name: Checkout version
+      command: 
+        git checkout {{ tag_version }}
+      args:
+        chdir: '{{ user_dir }}/nexus-cli'
+
+    - name: Build Nexus CLI
+      command:
+        cargo build --release
+      environment:
+        PATH: "{{ user_dir }}/.cargo/bin:{{ ansible_env.PATH }}"
+      args:
+        chdir: '{{ user_dir }}/nexus-cli/clients/cli'
+    
+    - name: Restart service
+      become: yes
+      systemd: 
+        name: nexus
+        state: restarted
