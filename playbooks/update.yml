@@ -1,7 +1,7 @@
 - name: Upgrade nodes
   hosts: nexus
   vars:
-    tag_version: v0.8.13
+    tag_version: v0.8.14
 
   tasks:
     - name: Fetch new version
