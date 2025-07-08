@@ -29,7 +29,7 @@
       git:
         repo: https://github.com/nexus-xyz/nexus-cli
         dest: '{{ user_dir }}/nexus-cli'
-        version: main
+        version: '{{ nexus_version }}'
 
     - name: Build Nexus CLI
       command:

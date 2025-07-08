@@ -1,7 +1,5 @@
 - name: Upgrade nodes
   hosts: nexus
-  vars:
-    tag_version: v0.9.0
 
   tasks:
     - name: Fetch new version
@@ -12,7 +10,7 @@
     
     - name: Checkout version
       command: 
-        git checkout {{ tag_version }}
+        git checkout {{ nexus_version }}
       args:
         chdir: '{{ user_dir }}/nexus-cli'
 
