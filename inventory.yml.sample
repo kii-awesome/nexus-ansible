@@ -5,7 +5,7 @@ all:
     ansible_port: 22
     ansible_ssh_private_key_file: ~/.ssh/rsa
     user_dir: /home/{{ ansible_user }}
-    nexus_version: v0.9.2 # nexus cli latest version
+    nexus_version: v0.9.6 # nexus cli latest version
   children:
     servers:
       hosts:

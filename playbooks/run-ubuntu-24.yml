@@ -1,0 +1,30 @@
+- name: Start nexus nodes ubuntu ≥ 24
+  hosts: nexus
+    
+  tasks:
+    - name: Updated dependencies
+      become: yes
+      apt:
+        update_cache: yes
+
+    - name: Install Nexus
+      get_url: 
+        url: 'https://github.com/nexus-xyz/nexus-cli/releases/download/{{ nexus_version }}/nexus-network-linux-x86_64'
+        dest: '{{ user_dir }}/nexus-network'
+        mode: '755'
+
+    - name: Create Nexus Service
+      become: yes
+      template:
+        src: nexus-24.service.j2
+        dest: /etc/systemd/system/nexus.service
+        owner: root
+        group: root
+
+    - name: Start nexus
+      become: yes
+      systemd: 
+        name: nexus
+        state: restarted
+        daemon_reload: yes
+        enabled: yes

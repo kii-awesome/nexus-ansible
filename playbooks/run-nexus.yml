@@ -1,4 +1,4 @@
-- name: Start nexus nodes
+- name: Start nexus nodes ubuntu < 24
   hosts: nexus
     
   tasks:
